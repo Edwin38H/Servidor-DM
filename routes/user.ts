@@ -1,20 +1,48 @@
-import {Router,Request,Response} from 'express';
+import { Router, Request, Response } from 'express';
 import { Usuario } from '../models/usuario.model';
-const userRoutes=Router();
-userRoutes.post('/create',(req:Request,res:Response)=>{
-    const user={
-        nombre:req.body.nombre,
-        email: req.body.email,
-        avatar:req.body.avatar
-    }
-    Usuario.create(user).then(userDB=>{
-          res.json({
-                ok:true,
-                user: userDB
+import bcrypt from 'bcrypt';
+const userRoutes = Router();
+//login
+userRoutes.post('/login', (req: Request, res: Response) => {
+    const body = req.body;
+    Usuario.findOne({ email: body.email }, (err:any, userDB:any) => {
+        if (err) throw err;
+        if (!userDB) {
+            return res.json({
+                ok: false,
+                mensaje: 'Usuario/contraseña no son correctos'
             });
-    }).catch(err=>{
+        }
+        if (userDB.compararPassword(body.password)) {
+            res.json({
+                ok: true,
+                token: 'wqyuyqwuwyuqwywuq'
+            });
+        } else {
+            return res.json({
+                ok: false,
+                mensaje: 'Usuario/contraseña no son correctos****'
+            });
+        }
+    })
+})
+userRoutes.post('/create', (req: Request, res: Response) => {
+    const user = {
+        nombre: req.body.nombre,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, 10),
+        avatar: req.body.avatar
+    }
+    Usuario.create(user).then(userDB => {
+        res.json(
+            {
+                ok: true,
+                user: userDB
+            }
+        );
+    }).catch(err => {
         res.json({
-            ok:false,
+            ok: false,
             err
         });
     }
