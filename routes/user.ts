@@ -2,8 +2,7 @@ import { Router, Request, Response } from 'express';
 import { Usuario } from '../models/usuario.model';
 import bcrypt from 'bcrypt';
 import Token from '../classes/token';
-
-
+import { verificaToken } from '../middlewares/autenticacion';
 const userRoutes = Router();
 //login
 userRoutes.post('/login', (req: Request, res: Response) => {
@@ -43,12 +42,16 @@ userRoutes.post('/create', (req: Request, res: Response) => {
         avatar: req.body.avatar
     }
     Usuario.create(user).then(userDB => {
-        res.json(
-            {
-                ok: true,
-                user: userDB
-            }
-        );
+        const tokenUser = Token.getJwToken({
+            _id: userDB._id,
+            nombre: userDB.nombre,
+            email: userDB.email,
+            avatar: userDB.avatar
+        });
+        res.json({
+            ok: true,
+            token: tokenUser
+        });
     }).catch(err => {
         res.json({
             ok: false,
@@ -56,5 +59,12 @@ userRoutes.post('/create', (req: Request, res: Response) => {
         });
     }
     );
+});
+//actualizar usuario
+userRoutes.post('/update', verificaToken, (req: any, res: Response) => {
+    res.json({
+        ok: true,
+        usuario: req.usuario
+    });
 });
 export default userRoutes;

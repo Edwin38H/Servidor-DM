@@ -7,6 +7,7 @@ const express_1 = require("express");
 const usuario_model_1 = require("../models/usuario.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const token_1 = __importDefault(require("../classes/token"));
+const autenticacion_1 = require("../middlewares/autenticacion");
 const userRoutes = (0, express_1.Router)();
 //login
 userRoutes.post('/login', (req, res) => {
@@ -48,15 +49,28 @@ userRoutes.post('/create', (req, res) => {
         avatar: req.body.avatar
     };
     usuario_model_1.Usuario.create(user).then(userDB => {
+        const tokenUser = token_1.default.getJwToken({
+            _id: userDB._id,
+            nombre: userDB.nombre,
+            email: userDB.email,
+            avatar: userDB.avatar
+        });
         res.json({
             ok: true,
-            user: userDB
+            token: tokenUser
         });
     }).catch(err => {
         res.json({
             ok: false,
             err
         });
+    });
+});
+//actualizar usuario
+userRoutes.post('/update', autenticacion_1.verificaToken, (req, res) => {
+    res.json({
+        ok: true,
+        usuario: req.usuario
     });
 });
 exports.default = userRoutes;
