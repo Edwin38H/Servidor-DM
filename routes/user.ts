@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { Usuario } from '../models/usuario.model';
 import bcrypt from 'bcrypt';
+import Token from '../classes/token';
+
+
 const userRoutes = Router();
 //login
 userRoutes.post('/login', (req: Request, res: Response) => {
@@ -14,9 +17,15 @@ userRoutes.post('/login', (req: Request, res: Response) => {
             });
         }
         if (userDB.compararPassword(body.password)) {
+            const tokenUser = Token.getJwToken({
+                _id: userDB._id,
+                nombre: userDB.nombre,
+                email: userDB.email,
+                avatar: userDB.avatar
+            });
             res.json({
                 ok: true,
-                token: 'wqyuyqwuwyuqwywuq'
+                token: tokenUser
             });
         } else {
             return res.json({

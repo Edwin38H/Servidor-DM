@@ -16,7 +16,7 @@ server.app.use('/user', user_1.default);
 server.start(() => {
     console.log(`Servidor corriendo en puerto ${server.port}`);
     const mongoose = require("mongoose");
-    mongoose.connect('mongodb://localhost:27017/fotosgram2', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }, (err) => {
+    mongoose.connect('mongodb://localhost:27017/fotosgram2', { useUnifiedTopology: true, useNewUrlParser: true }, (err) => {
         if (err)
             throw err;
         console.log('Base de datos ONLINE2');
