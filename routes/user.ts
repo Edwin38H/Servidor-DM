@@ -62,9 +62,29 @@ userRoutes.post('/create', (req: Request, res: Response) => {
 });
 //actualizar usuario
 userRoutes.post('/update', verificaToken, (req: any, res: Response) => {
-    res.json({
-        ok: true,
-        usuario: req.usuario
+    const user = {
+        nombre: req.body.nombre || req.usuario.nombre,
+        email: req.body.email || req.usuario.email,
+        avatar: req.body.avatar || req.usuario.avatar
+    }
+    Usuario.findByIdAndUpdate(req.usuario._id, user, { new: true }, (err:any, userDB:any) => {
+        if (err) throw err;
+        if (!userDB) {
+            return res.json({
+                ok: false,
+                mensaje: 'No existe un usuario con ese ID'
+            });
+        }
+        const tokenUser = Token.getJwToken({
+            _id: userDB._id,
+            nombre: userDB.nombre,
+            email: userDB.email,
+            avatar: userDB.avatar
+        });
+        res.json({
+            ok: true,
+            token: tokenUser
+        });
     });
 });
 export default userRoutes;
