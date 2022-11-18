@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import { FileUpload } from '../interfaces/file-upload';
+import {FileUpload} from '../interfaces/file-upload';
 import { verificaToken } from '../middlewares/autenticacion';
 import { Post } from '../models/post.model';
 const postRoutes = Router();
