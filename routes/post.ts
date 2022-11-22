@@ -1,8 +1,10 @@
 import { Router, Response } from 'express';
-import {FileUpload} from '../interfaces/file-upload';
+import { FileUpload } from '../interfaces/file-upload';
 import { verificaToken } from '../middlewares/autenticacion';
 import { Post } from '../models/post.model';
+import FileSystem from '../classes/file-system';
 const postRoutes = Router();
+const fileSystem = new FileSystem();
 //Obtener POST paginados
 postRoutes.get('/', async (req: any, res: Response) => {
     let pagina = Number(req.query.pagina) || 1;
@@ -28,7 +30,7 @@ postRoutes.post('/', [verificaToken], (req: any, res: Response) => {
     body
     });*/
     Post.create(body).then(async postDB => {
-        await postDB.populate('usuario',);
+        await postDB.populate('usuario');
         res.json({
             ok: true,
             post: postDB
@@ -58,8 +60,9 @@ postRoutes.post('/upload', [verificaToken], (req: any, res: Response) => {
             mensaje: 'No se subió no es una imagen'
         });
     }
+    fileSystem.guardarImagenTemporal(file, req.usuario._id);
     res.json({
-        ok: false,
+        ok: true,
         file: file.mimetype
     });
 });
