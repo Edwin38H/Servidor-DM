@@ -5,12 +5,24 @@ import uniqid from 'uniqid';
 export default class FileSystem {
     constructor() { };
     guardarImagenTemporal(file: FileUpload, userId: string) {
-        //Crear carpetas
-        const path = this.crearCarpetaUsuario(userId);
-        //Nombre de archivo
-        const NombreArchivo = this.generarNombreUnico(file.name);
-        console.log(file.name);
-        console.log(NombreArchivo);
+        return new Promise((resolve, reject) => {
+            //Crear carpetas
+            const path = this.crearCarpetaUsuario(userId);
+            //Nombre de archivo
+            const nombreArchivo = this.generarNombreUnico(file.name);
+            /*console.log(file.name);
+            console.log(NombreArchivo);*/
+            //mover archivo del Temp a nuestra carpeta
+            file.mv(`${path}/${nombreArchivo}`, (err: any) => {
+                if (err) {
+                    //no se pudo mover
+                    reject(err);
+                } else {
+                    //todo salio bien!
+                    resolve(nombreArchivo);
+                }
+            });
+        })
     }
     private generarNombreUnico(nombreOriginal: string) {
         //6.copy.jpg

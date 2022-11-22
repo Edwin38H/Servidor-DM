@@ -40,7 +40,7 @@ postRoutes.post('/', [verificaToken], (req: any, res: Response) => {
     });
 });
 //servicio para subir archivos
-postRoutes.post('/upload', [verificaToken], (req: any, res: Response) => {
+postRoutes.post('/upload', [verificaToken], async (req: any, res: Response) => {
     if (!req.files) {
         return res.status(400).json({
             ok: false,
@@ -60,7 +60,7 @@ postRoutes.post('/upload', [verificaToken], (req: any, res: Response) => {
             mensaje: 'No se subió no es una imagen'
         });
     }
-    fileSystem.guardarImagenTemporal(file, req.usuario._id);
+    await fileSystem.guardarImagenTemporal(file, req.usuario._id);
     res.json({
         ok: true,
         file: file.mimetype

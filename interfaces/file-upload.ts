@@ -5,4 +5,5 @@ export interface FileUpload{
     temFilePath:string;
     truncated:boolean;
     mimetype:string;
+    mv:Function;
     }
